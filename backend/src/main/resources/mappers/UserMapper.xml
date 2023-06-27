@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.websocket.dao.UserDao">
+	<resultMap id="userResult"
+		type="com.example.websocket.model.User">
+		<id property="userId" column="USER_ID" />
+		<result property="userName" column="USER_NAME" />
+		<result property="groupName" column="GROUP_NAME" />
+		<result property="email" column="EMAIL" />
+		<result property="password" column="PASSWORD" />
+		<result property="fullName" column="FULL_NAME" />
+		<collection property="listRole"
+			ofType="com.example.websocket.model.Role">
+			<id property="roleId" column="ROLE_ID" />
+			<result property="roleName" column="ROLE_NAME" />
+		</collection>
+
+	</resultMap>
+	<select id="findByUserName" parameterType="String"
+		resultMap="userResult">
+		SELECT USER.*,role.* from tsst_user user
+		LEFT JOIN user_role
+		userRole ON user.USER_ID = userRole.USER_ID
+		LEFT JOIN tsst_role role ON
+		userRole.ROLE_ID = role.ROLE_ID
+		WHERE USER.USER_NAME = #{userName}
+	</select>
+	<select id="existsByUserName" parameterType="String"
+		resultType="Integer">
+		SELECT COUNT(*)
+		FROM tsst_user
+		WHERE USER_NAME = #{userName}
+	</select>
+	<select id="existsByEmail" parameterType="String"
+		resultType="Integer">
+		SELECT COUNT(*)
+		FROM tsst_user
+		WHERE EMAIL = #{email}
+	</select>
+	<insert id="insertUser" useGeneratedKeys="true"
+		keyProperty="userId" keyColumn="USER_ID"
+		parameterType="com.example.websocket.model.User">
+		INSERT INTO tsst_user
+		(USER_NAME,EMAIL,PASSWORD)
+		VALUES
+		(#{userName},#{email},#{password});
+	</insert>
+</mapper>
